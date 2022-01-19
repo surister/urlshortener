@@ -2,50 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>No Heaven Url Shortener</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 </head>
 <body>
 <style>
-    .is-borderless{
+    .is-borderless {
         border-bottom: 1px black solid !important;
         border-radius: 0;
     }
 
 </style>
 <section class="hero is-success is-halfheight">
-    <div class="hero-body">
-        <div class="">
-            <p class="title">
-                Finally a straight up url shortener
-            </p>
-            <div class="pt-3">
-                <input id="data" class="input is-shadowless">
+    <div class="p-5">
+        <div class="columns">
+            <div class="column"></div>
+            <div class="column is-one-quarter">
+                <p class="title">
+                    Finally a straight up url shortener
+                </p>
+                <div class="pt-3">
+                    <label class="label">Url a shortear</label>
+                    <input id="data" class="input is-shadowless">
+                </div>
+                <div class="pt-3">
+                    <lable class="label">Clave</lable>
+                    <input id="data_key" class="input is-shadowless">
+                </div>
+                <div class="pt-3">
+                    <input id="result" class="input is-shadowless has-background-success is-borderless is-static"
+                           readonly>
+                </div>
+                <div class="pt-4">
+                    <button id="btn" class="button is-danger">Shorten!</button>
+                </div>
+
             </div>
-            <div class="pt-3">
-                <input id="result" class="input is-shadowless has-background-success is-borderless is-static" readonly>
-            </div>
-            <div class="pt-4">
-                <button id="btn" class="button is-danger">Shorten!</button>
-            </div>
+            <div class="column"></div>
+            <div class="column"></div>
         </div>
     </div>
 </section>
 <section>
-<div class="">
+    <div class="p-2">
         <h1 class="title">
-
-    </h1>
-</div>
+            Made with love by Surister - <a href="https://www.github.com/surister">github</a>
+        </h1>
+    </div>
 </section>
-<script>console.log('ok1')
+<script>
     document.getElementById('btn').addEventListener('click', function () {
-        console.log('ok2')
-        fetchUrl(document.getElementById('data').value)
+        let url = document.getElementById('data').value;
+        let key = document.getElementById('data_key').value
+        fetchUrl(url, key)
     })
 
-    async function fetchUrl(url) {
-        const response = await fetch('{% url 'add_url' %}' + '?url=' + url)
+    async function fetchUrl(url, key) {
+        const response = await fetch('{% url 'add_url' %}' + '?url=' + url + '&key=' + key)
         const data = await response.json()
 
         document.getElementById('result').value = data['url'];
