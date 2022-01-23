@@ -4,6 +4,7 @@ from django.db import models
 import uuid
 
 from django.db.models import CASCADE
+from django.urls import reverse_lazy
 
 
 class Url(models.Model):
@@ -24,19 +25,23 @@ class Url(models.Model):
         super().save()
         Stats.objects.create(url=self)
 
+    @property
+    def compose_url(self):
+        final_key = self.key or self.custom_key
+        return str(reverse_lazy('get_url', args=[final_key]))
+
     def __str__(self):
         return f'Key: {self.key} Custom Key: {self.custom_key} - Url: {self.forward_url}'
 
 
 class Stats(models.Model):
     url = models.ForeignKey(Url, on_delete=CASCADE)
-    times_clicked = models.IntegerField(default=0)
 
     def add_visitor(self, ip_address):
         Visitor.objects.create(stats=self, visited_on=datetime.datetime.now(), ip_address=ip_address)
 
     def __str__(self):
-        return f'Url {self.url} - times_clicked {self.times_clicked}'
+        return f'Url {self.url}'
 
 
 class Visitor(models.Model):

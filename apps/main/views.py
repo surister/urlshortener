@@ -1,7 +1,13 @@
-from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q, Count
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_http_methods, require_safe
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Url, Stats
 
@@ -17,12 +23,10 @@ def add_url(request):
         custom_key=custom_key
     )
 
-    final_key = url_obj.key or url_obj.custom_key
-
     return JsonResponse(
         {
             'code': 200,
-            'url': 'https://' + request.get_host() + str(reverse_lazy('get_url', args=[final_key]))
+            'url': url_obj.compose_url(request.get_host())
         }
     )
 
@@ -35,10 +39,23 @@ def get_url(request, key):
         url = url.first()
         stats = Stats.objects.get(url=url)
         stats.add_visitor(request.environ.get('REMOTE_ADDR'))
-
         return HttpResponseRedirect(url.forward_url)
 
     return render(request, 'main/main.html')
+
+
+class StatsList(APIView):
+    permission_classes = [IsAuthenticated, ]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'main/stats.html'
+
+    def get(self, request):
+        queryset = Url.objects.annotate(number_of_visitors=Count('stats__visitor'))
+        return Response(
+            {
+                'urls': queryset
+            }
+        )
 
 
 def main_view(request):

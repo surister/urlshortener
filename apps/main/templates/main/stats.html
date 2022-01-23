@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>No Heaven Url Shortener</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+</head>
+<body>
+<div class="container is-fluid">
+
+    <div class="columns is-centered pt-5">
+        <div class="column is-narrow">
+            <h1 class="title">Amazing stats!</h1>
+            <div class="table-container">
+                <table class="table mx-auto">
+                    <thead>
+                    <tr>
+                        <th>Url</th>
+                        <th>Short Url</th>
+                        <th>Visits</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for url in urls %}
+                        <tr>
+                            <td><a href="{{ url.forward_url }}">{{ url.forward_url }}</a></td>
+                            <td><a href="{{ request.scheme }}://{{ request.get_host }}{{ url.compose_url }}">{{ request.scheme }}://{{ request.get_host }}{{ url.compose_url }}</a>
+                            </td>
+                            <td>{{ url.number_of_visitors }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
