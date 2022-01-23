@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods, require_safe
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -23,11 +24,13 @@ def add_url(request):
         custom_key=custom_key
     )
 
+    data = {
+        'url': f'{ request.scheme }://{ request.get_host() }{ url_obj.compose_url }'
+    }
+
     return JsonResponse(
-        {
-            'code': 200,
-            'url': url_obj.compose_url(request.get_host())
-        }
+        status=status.HTTP_200_OK,
+        data=data,
     )
 
 
